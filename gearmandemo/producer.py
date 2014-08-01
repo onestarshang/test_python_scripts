@@ -1,7 +1,7 @@
 import time
 from gearman import GearmanClient, Task
 
-client = GearmanClient(["10.7.50.12"])
+client = GearmanClient(["127.0.0.1"])
 
 for i in range(5):
     client.dispatch_background_task('speak', i)
