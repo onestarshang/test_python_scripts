@@ -5,6 +5,6 @@ def speak(job):
     print r
     return r
 
-worker = GearmanWorker(["10.7.50.12"])
+worker = GearmanWorker(["127.0.0.1"])
 worker.register_function('speak', speak, timeout=3)
 worker.work()
