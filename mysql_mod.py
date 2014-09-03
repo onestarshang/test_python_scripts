@@ -55,6 +55,36 @@ def rundb(sql, vals=[] , db_conf={}, result=True):
         disconnectdb(curs, conn)
         return r
 
+
+class MysqlDBExecutor(object):
+
+    def __init__(self, serverhost, dbname, username, password, charset='utf8'):
+        self.conn = mdb.connect(serverhost, username, password, dbname, charset = charset)
+        self.curs = self.conn.cursor()
+
+    def __enter__(self):
+        return self.__rundb
+
+    def __rundb(self, sql, vals=[] , db_conf={}, result=True):
+        self.curs.execute(sql , vals)
+        self.conn.commit()
+        r = None
+        if result :
+            r = self.curs.fetchall()
+        return r
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        try:
+            self.curs.close()
+        except Exception, e:
+            logging.error(e)
+
+        try:
+            self.conn.close()
+        except Exception, e:
+            logging.error(e)
+
+
 if __name__ == '__main__':
     #tt = "select * from tag_users where name like '%%"+name+"%%'"
 
@@ -62,3 +92,9 @@ if __name__ == '__main__':
 
     res = rundb(tt2, [xxx])
     print res
+    with MysqlDBExecutor(HOST, DB, UID, PWD) as execdb:
+        sql = """select id from mysites_vultask limit 3;"""
+        res = execdb(sql)
+        print res
+
+    pass
